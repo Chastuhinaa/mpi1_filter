@@ -3,29 +3,29 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-#include <cmath>
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include <windows.h>
 
-static const int DEFAULT_N   = 20;
-static const int VALUE_RANGE = 200; 
-static const int ROOT        = 0;
+static const int N    = 1000000;
+static const int SEED = 42;
+static const int ROOT = 0;
 
 int main(int argc, char* argv[])
 {
     MPI_Init(&argc, &argv);
     SetConsoleOutputCP(65001);
+
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int n = (argc > 1) ? atoi(argv[1]) : DEFAULT_N;
-    if (n < size) n = size;   
+    int n = (argc > 1) ? atoi(argv[1]) : N;
+    if (n < size) n = size;
 
     int base  = n / size;
-    int extra = n % size;  
+    int extra = n % size;
 
     std::vector<int> sendcounts(size), displs(size);
     for (int i = 0; i < size; ++i) {
@@ -41,24 +41,24 @@ int main(int argc, char* argv[])
 
     if (rank == ROOT) {
         global_data.resize(n);
-        srand(static_cast<unsigned>(time(nullptr)));
+        srand(SEED);
         for (int i = 0; i < n; ++i)
-            global_data[i] = (rand() % VALUE_RANGE) - VALUE_RANGE / 2;
+            global_data[i] = (rand() % 200) - 100;
 
-        double sum = std::accumulate(global_data.begin(), global_data.end(), 0LL);
-        mean = sum / n;
+        long long sum = std::accumulate(global_data.begin(), global_data.end(), 0LL);
+        mean = static_cast<double>(sum) / n;
 
         printf("=== Паралельна фільтрація масиву (MPI) ===\n");
         printf("Кількість процесів : %d\n", size);
         printf("Розмір масиву      : %d\n", n);
-        printf("\nПочатковий масив:\n  ");
-        for (int i = 0; i < n; ++i) printf("%4d", global_data[i]);
-        printf("\n");
-        printf("Середнє арифметичне: %.2f\n", mean);
-        printf("Умова фільтрації   : елемент > %.2f\n\n", mean);
+        printf("Середнє арифметичне: %.6f\n", mean);
+        printf("Умова фільтрації   : елемент > %.6f\n\n", mean);
     }
 
     MPI_Bcast(&mean, 1, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    double t_start = MPI_Wtime();
 
     MPI_Scatterv(
         global_data.data(), sendcounts.data(), displs.data(), MPI_INT,
@@ -66,14 +66,10 @@ int main(int argc, char* argv[])
         ROOT, MPI_COMM_WORLD
     );
 
-    double t_start = MPI_Wtime();
-
     std::vector<int> local_result;
     local_result.reserve(local_n);
     for (int v : local_data)
         if (v > mean) local_result.push_back(v);
-
-    double t_end = MPI_Wtime();
 
     int local_count = static_cast<int>(local_result.size());
 
@@ -84,7 +80,6 @@ int main(int argc, char* argv[])
 
     int total_count = 0;
     std::vector<int> result;
-
     if (rank == ROOT) {
         recv_displs[0] = 0;
         for (int i = 1; i < size; ++i)
@@ -99,36 +94,40 @@ int main(int argc, char* argv[])
         ROOT, MPI_COMM_WORLD
     );
 
+    double t_end = MPI_Wtime();
+   
+
     double local_time = t_end - t_start;
     std::vector<double> all_times;
     if (rank == ROOT) all_times.resize(size);
-
     MPI_Gather(&local_time, 1, MPI_DOUBLE,
                all_times.data(), 1, MPI_DOUBLE,
                ROOT, MPI_COMM_WORLD);
 
     if (rank == ROOT) {
+        printf("Знайдено елементів : %d\n", total_count);
+        printf("Відфільтрований масив (перші 20): ");
+        int show = (total_count < 20) ? total_count : 20;
+        for (int i = 0; i < show; ++i) printf("%d ", result[i]);
+        printf("\n\n");
+
         printf("Деталі по процесах:\n");
         for (int i = 0; i < size; ++i)
             printf("  Процес %d: отримав %d ел., відфільтрував %d, час = %.6f с\n",
-                   i, sendcounts[i], recvcounts[i], all_times[i]);
+                i, sendcounts[i], recvcounts[i], all_times[i]);
 
-        printf("\nВідфільтрований масив (%d ел.):\n  ", total_count);
-        for (int v : result) printf("%4d", v);
-        printf("\n");
+        double parallel_time = *std::max_element(all_times.begin(), all_times.end());
+        printf("\nЧас виконання (MPI): %.7f с\n", parallel_time);
 
         std::vector<int> expected;
+        expected.reserve(n);
         for (int v : global_data)
             if (v > mean) expected.push_back(v);
 
-        std::vector<int> sorted_result = result, sorted_expected = expected;
-        std::sort(sorted_result.begin(), sorted_result.end());
-        std::sort(sorted_expected.begin(), sorted_expected.end());
-        bool ok = (sorted_result == sorted_expected);
-        printf("\nПеревірка коректності: %s\n", ok ? "ПРОЙДЕНО" : "ПОМИЛКА");
-
-        double max_time = *std::max_element(all_times.begin(), all_times.end());
-        printf("Загальний час (max по процесах): %.6f с\n", max_time);
+        std::vector<int> sr = result, se = expected;
+        std::sort(sr.begin(), sr.end());
+        std::sort(se.begin(), se.end());
+        printf("Перевірка коректності: %s\n", (sr == se) ? "ПРОЙДЕНО" : "ПОМИЛКА");
     }
 
     MPI_Finalize();

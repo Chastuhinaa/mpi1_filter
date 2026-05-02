@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36930.0 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mpi_filter", "mpi_filter\mpi_filter.vcxproj", "{F132EF74-BEB4-4FF5-8013-8453E09C3CAE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter_sequential", "filter_sequential\filter_sequential.vcxproj", "{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{F132EF74-BEB4-4FF5-8013-8453E09C3CAE}.Release|x64.Build.0 = Release|x64
 		{F132EF74-BEB4-4FF5-8013-8453E09C3CAE}.Release|x86.ActiveCfg = Release|Win32
 		{F132EF74-BEB4-4FF5-8013-8453E09C3CAE}.Release|x86.Build.0 = Release|Win32
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Debug|x64.ActiveCfg = Debug|x64
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Debug|x64.Build.0 = Debug|x64
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Debug|x86.ActiveCfg = Debug|Win32
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Debug|x86.Build.0 = Debug|Win32
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x64.ActiveCfg = Release|x64
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x64.Build.0 = Release|x64
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x86.ActiveCfg = Release|Win32
+		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
