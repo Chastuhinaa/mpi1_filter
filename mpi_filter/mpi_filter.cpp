@@ -1,4 +1,3 @@
-
 #include <mpi.h>
 #include <cstdio>
 #include <cstdlib>
@@ -8,7 +7,7 @@
 #include <numeric>
 #include <windows.h>
 
-static const int N    = 1000000;
+static const int N = 1000000;
 static const int SEED = 42;
 static const int ROOT = 0;
 
@@ -24,13 +23,13 @@ int main(int argc, char* argv[])
     int n = (argc > 1) ? atoi(argv[1]) : N;
     if (n < size) n = size;
 
-    int base  = n / size;
+    int base = n / size;
     int extra = n % size;
 
     std::vector<int> sendcounts(size), displs(size);
     for (int i = 0; i < size; ++i) {
         sendcounts[i] = base + (i < extra ? 1 : 0);
-        displs[i]     = (i == 0) ? 0 : displs[i - 1] + sendcounts[i - 1];
+        displs[i] = (i == 0) ? 0 : displs[i - 1] + sendcounts[i - 1];
     }
 
     int local_n = sendcounts[rank];
@@ -75,8 +74,8 @@ int main(int argc, char* argv[])
 
     std::vector<int> recvcounts(size), recv_displs(size);
     MPI_Gather(&local_count, 1, MPI_INT,
-               recvcounts.data(), 1, MPI_INT,
-               ROOT, MPI_COMM_WORLD);
+        recvcounts.data(), 1, MPI_INT,
+        ROOT, MPI_COMM_WORLD);
 
     int total_count = 0;
     std::vector<int> result;
@@ -87,6 +86,11 @@ int main(int argc, char* argv[])
         total_count = recv_displs[size - 1] + recvcounts[size - 1];
         result.resize(total_count);
     }
+    else {
+     
+        std::fill(recvcounts.begin(), recvcounts.end(), 0);
+        std::fill(recv_displs.begin(), recv_displs.end(), 0);
+    }
 
     MPI_Gatherv(
         local_result.data(), local_count, MPI_INT,
@@ -95,14 +99,14 @@ int main(int argc, char* argv[])
     );
 
     double t_end = MPI_Wtime();
-   
+
 
     double local_time = t_end - t_start;
     std::vector<double> all_times;
     if (rank == ROOT) all_times.resize(size);
     MPI_Gather(&local_time, 1, MPI_DOUBLE,
-               all_times.data(), 1, MPI_DOUBLE,
-               ROOT, MPI_COMM_WORLD);
+        all_times.data(), 1, MPI_DOUBLE,
+        ROOT, MPI_COMM_WORLD);
 
     if (rank == ROOT) {
         printf("Знайдено елементів : %d\n", total_count);
