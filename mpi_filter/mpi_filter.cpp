@@ -60,10 +60,7 @@ int main(int argc, char* argv[])
     double t_start = MPI_Wtime();
 
     MPI_Scatterv(
-        global_data.data(), sendcounts.data(), displs.data(), MPI_INT,
-        local_data.data(), local_n, MPI_INT,
-        ROOT, MPI_COMM_WORLD
-    );
+        global_data.data(), sendcounts.data(), displs.data(), MPI_INT, local_data.data(), local_n, MPI_INT, ROOT, MPI_COMM_WORLD );
 
     std::vector<int> local_result;
     local_result.reserve(local_n);
@@ -73,9 +70,7 @@ int main(int argc, char* argv[])
     int local_count = static_cast<int>(local_result.size());
 
     std::vector<int> recvcounts(size), recv_displs(size);
-    MPI_Gather(&local_count, 1, MPI_INT,
-        recvcounts.data(), 1, MPI_INT,
-        ROOT, MPI_COMM_WORLD);
+    MPI_Gather(&local_count, 1, MPI_INT, recvcounts.data(), 1, MPI_INT, ROOT, MPI_COMM_WORLD);
 
     int total_count = 0;
     std::vector<int> result;
@@ -93,10 +88,7 @@ int main(int argc, char* argv[])
     }
 
     MPI_Gatherv(
-        local_result.data(), local_count, MPI_INT,
-        result.data(), recvcounts.data(), recv_displs.data(), MPI_INT,
-        ROOT, MPI_COMM_WORLD
-    );
+        local_result.data(), local_count, MPI_INT, result.data(), recvcounts.data(), recv_displs.data(), MPI_INT, ROOT, MPI_COMM_WORLD );
 
     double t_end = MPI_Wtime();
 
@@ -104,9 +96,7 @@ int main(int argc, char* argv[])
     double local_time = t_end - t_start;
     std::vector<double> all_times;
     if (rank == ROOT) all_times.resize(size);
-    MPI_Gather(&local_time, 1, MPI_DOUBLE,
-        all_times.data(), 1, MPI_DOUBLE,
-        ROOT, MPI_COMM_WORLD);
+    MPI_Gather(&local_time, 1, MPI_DOUBLE, all_times.data(), 1, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
 
     if (rank == ROOT) {
         printf("Знайдено елементів : %d\n", total_count);
