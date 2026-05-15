@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36930.0 d17.14
+VisualStudioVersion = 17.14.36930.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mpi_filter", "mpi_filter\mpi_filter.vcxproj", "{F132EF74-BEB4-4FF5-8013-8453E09C3CAE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter_sequential", "filter_sequential\filter_sequential.vcxproj", "{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filter_openmp", "filter_openmp\filter_openmp.vcxproj", "{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x64.Build.0 = Release|x64
 		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x86.ActiveCfg = Release|Win32
 		{404D6872-5EEC-4595-8D6E-B8ECA16ABD25}.Release|x86.Build.0 = Release|Win32
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Debug|x64.ActiveCfg = Debug|x64
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Debug|x64.Build.0 = Debug|x64
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Debug|x86.ActiveCfg = Debug|Win32
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Debug|x86.Build.0 = Debug|Win32
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Release|x64.ActiveCfg = Release|x64
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Release|x64.Build.0 = Release|x64
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Release|x86.ActiveCfg = Release|Win32
+		{30DDCFC2-BE1B-49AD-A8E9-A6A5153DAFF2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
